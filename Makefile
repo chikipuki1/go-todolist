@@ -1,6 +1,7 @@
 include .env
 export
 
+export PROJECT_ROOT=$(shell pwd)
 
 env-up:
 	@docker compose up -d todolist-postgres
@@ -10,7 +11,7 @@ env-cleanup:
 	@read -p "Очистить все volume файлы окружения? Опасность утери данных. [y/N]: " ans; \
 	if [ "$$ans" = "y" ]; then \
 		docker compose down todolist-postgres port-forwarder && \
-		sudo rm -rf out/pgdata && \
+		rm -rf ${PROJECT_ROOT}/out/pgdata && \
 		echo "Файлы окружения очищены"; \
 	else \
 		echo "Очистка окружения отменена."; \
@@ -46,7 +47,7 @@ migrate-action:
 		"$(action)"
 
 todolist-run:
-	@export LOGGER_FOLDER=./out/logs && \
+	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs && \
 	export POSTGRES_HOST=localhost && \
 	go mod tidy && \
-	go run cmd/todolist/main.go
+	go run ${PROJECT_ROOT}/cmd/todolist/main.go
